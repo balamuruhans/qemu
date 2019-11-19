@@ -80,6 +80,8 @@ static uint32_t pnv_xscom_pcba(PnvChip *chip, uint64_t addr)
 
 static uint64_t xscom_read_default(PnvChip *chip, uint32_t pcba)
 {
+    bool is_chip0 = chip->chip_id == 0;
+
     switch (pcba) {
     case 0xf000f:
         return PNV_CHIP_GET_CLASS(chip)->chip_cfam_id;
@@ -96,13 +98,22 @@ static uint64_t xscom_read_default(PnvChip *chip, uint32_t pcba)
         return (PNV_HOMER_SIZE - 1) & 0x300000;
 
     case P9_PBA_BAR2: /* P9 occ common area */
-        return PNV9_OCC_COMMON_AREA(chip);
+        if (is_chip0) {
+            return PNV9_OCC_COMMON_AREA(chip);
+        }
+        return 0;
     case P8_PBA_BAR3: /* P8 occ common area */
-        return PNV_OCC_COMMON_AREA(chip);
+        if (is_chip0) {
+            return PNV_OCC_COMMON_AREA(chip);
+        }
+        return 0;
 
     case P9_PBA_BARMASK2: /* P9 occ common area size */
     case P8_PBA_BARMASK3: /* P8 occ common area size */
-        return (PNV_OCC_COMMON_AREA_SIZE - 1) & 0x700000;
+        if (is_chip0) {
+            return (PNV_OCC_COMMON_AREA_SIZE - 1) & 0x700000;
+        }
+        return 0;
 
     case 0x1010c00:     /* PIBAM FIR */
     case 0x1010c03:     /* PIBAM FIR MASK */
