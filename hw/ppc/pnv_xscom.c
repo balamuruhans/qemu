@@ -115,6 +115,11 @@ static uint64_t xscom_read_default(PnvChip *chip, uint32_t pcba)
         }
         return 0;
 
+    case P8_PBA_BAR2: /* P8 slw image */
+        return PNV_SLW_IMAGE_BASE(chip);
+    case P8_PBA_BARMASK2: /* P8 slw image size is 1MB and mask is zero */
+        return 0x0;
+
     case 0x1010c00:     /* PIBAM FIR */
     case 0x1010c03:     /* PIBAM FIR MASK */
 
