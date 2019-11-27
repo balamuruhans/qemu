@@ -222,11 +222,17 @@ IPMIBmc *pnv_bmc_create(void);
 
 #define PNV_HOMER_SIZE              0x0000000000400000ull
 #define PNV_HOMER_BASE(chip)                                            \
-    (0x7ffd800000ull + ((uint64_t)PNV_CHIP_INDEX(chip)) * PNV_HOMER_SIZE)
+    (0x7ffd800000ull + ((uint64_t)(chip)->chip_id * PNV_HOMER_SIZE))
 
 #define PNV_SLW_SIZE                0x0000000000100000ull
 #define PNV_SLW_IMAGE_BASE(chip)                                        \
     (0x2ffda00000ull + ((uint64_t)(chip)->chip_id * PNV_SLW_SIZE))
+
+/* Mask to calculate Homer, Occ and slw size */
+#define PNV_HOMER_SIZE_MASK         (PNV_HOMER_SIZE - 1) & 0x300000
+#define PNV_OCC_CA_SIZE_MASK        (PNV_OCC_COMMON_AREA_SIZE -1) & 0x700000
+#define PNV_SLW_SIZE_MASK           0x0
+
 
 /*
  * XSCOM 0x20109CA defines the ICP BAR:
@@ -289,5 +295,5 @@ IPMIBmc *pnv_bmc_create(void);
 #define PNV9_OCC_COMMON_AREA         0x203fff800000ull
 
 #define PNV9_HOMER_BASE(chip)                                           \
-    (0x203ffd800000ull + ((uint64_t)PNV_CHIP_INDEX(chip)) * PNV_HOMER_SIZE)
+    (0x203ffd800000ull + ((uint64_t)(chip)->chip_id * PNV_HOMER_SIZE))
 #endif /* PPC_PNV_H */

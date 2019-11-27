@@ -17,6 +17,7 @@
  */
 
 #include "qemu/osdep.h"
+#include "qemu/log.h"
 #include "qapi/error.h"
 #include "exec/hwaddr.h"
 #include "exec/memory.h"
@@ -25,6 +26,7 @@
 #include "hw/qdev-properties.h"
 #include "hw/ppc/pnv.h"
 #include "hw/ppc/pnv_homer.h"
+#include "hw/ppc/pnv_xscom.h"
 
 
 static bool core_max_array(PnvHomer *homer, hwaddr addr)
@@ -114,10 +116,74 @@ static const MemoryRegionOps pnv_power8_homer_ops = {
     .endianness = DEVICE_BIG_ENDIAN,
 };
 
+/* P8 PBA (Trusted) SCOM Registers */
+#define P8_PBA_BAR0                     0x00
+#define P8_PBA_BAR1                     0x01
+#define P8_PBA_BAR2                     0x02
+#define P8_PBA_BAR3                     0x03
+#define P8_PBA_BARMASK0                 0x04
+#define P8_PBA_BARMASK1                 0x05
+#define P8_PBA_BARMASK2                 0x06
+#define P8_PBA_BARMASK3                 0x07
+
+static uint64_t pnv_homer_power8_xscom_read(void *opaque, hwaddr addr,
+                                            unsigned size)
+{
+    PnvHomer *homer = PNV_HOMER(opaque);
+    uint32_t offset = addr >> 3;
+    uint64_t val = 0;
+    bool is_chip0 = homer->chip->chip_id == 0;
+
+    switch (offset) {
+    case P8_PBA_BAR0:
+        val = PNV_HOMER_BASE(homer->chip);
+        break;
+    case P8_PBA_BARMASK0: /* P8 homer region size */
+        val = PNV_HOMER_SIZE_MASK;
+        break;
+    case P8_PBA_BAR3: /* P8 occ common area */
+        val = is_chip0 ? PNV_OCC_COMMON_AREA : 0;
+        break;
+    case P8_PBA_BARMASK3: /* P8 occ common area size */
+        val = is_chip0 ? PNV_OCC_CA_SIZE_MASK : 0;
+        break;
+    case P8_PBA_BAR2: /* P8 slw image */
+        val = PNV_SLW_IMAGE_BASE(homer->chip);
+        break;
+    case P8_PBA_BARMASK2: /* P8 slw image size is 1MB and mask is zero */
+        val = PNV_SLW_SIZE_MASK;
+        break;
+    case P8_PBA_BAR1:
+    case P8_PBA_BARMASK1:
+    default:
+        return -1;
+    }
+    return val;
+}
+
+static void pnv_homer_power8_xscom_write(void *opaque, hwaddr addr,
+                                         uint64_t val, unsigned size)
+{
+    /* callback function defined to homer xscom write */
+    return;
+}
+
+static const MemoryRegionOps pnv_homer_power8_xscom_ops = {
+    .read = pnv_homer_power8_xscom_read,
+    .write = pnv_homer_power8_xscom_write,
+    .valid.min_access_size = 8,
+    .valid.max_access_size = 8,
+    .impl.min_access_size = 8,
+    .impl.max_access_size = 8,
+    .endianness = DEVICE_BIG_ENDIAN,
+};
+
 static void pnv_homer_power8_class_init(ObjectClass *klass, void *data)
 {
     PnvHomerClass *homer = PNV_HOMER_CLASS(klass);
 
+    homer->xscom_size = PNV_XSCOM_PBA_SIZE;
+    homer->xscom_ops = &pnv_homer_power8_xscom_ops;
     homer->homer_ops = &pnv_power8_homer_ops;
     homer->core_max_base = PNV8_CORE_MAX_BASE;
 }
@@ -209,10 +275,66 @@ static const MemoryRegionOps pnv_power9_homer_ops = {
     .endianness = DEVICE_BIG_ENDIAN,
 };
 
+/* P9 PBA (Trusted) SCOM Registers */
+#define P9_PBA_BAR0                     0x00
+#define P9_PBA_BAR1                     0x01
+#define P9_PBA_BAR2                     0x02
+#define P9_PBA_BAR3                     0x03
+#define P9_PBA_BARMASK0                 0x04
+#define P9_PBA_BARMASK1                 0x05
+#define P9_PBA_BARMASK2                 0x06
+#define P9_PBA_BARMASK3                 0x07
+
+static uint64_t pnv_homer_power9_xscom_read(void *opaque, hwaddr addr,
+                                            unsigned size)
+{
+    PnvHomer *homer = PNV_HOMER(opaque);
+    uint32_t offset = addr >> 3;
+    uint64_t val = 0;
+    bool is_chip0 = homer->chip->chip_id == 0;
+
+    switch (offset) {
+    case P9_PBA_BAR0:
+        val = PNV9_HOMER_BASE(homer->chip);
+        break;
+    case P9_PBA_BARMASK0: /* P9 homer region size */
+        val = PNV_HOMER_SIZE_MASK;
+        break;
+    case P9_PBA_BAR2: /* P9 occ common area */
+        val = is_chip0 ? PNV9_OCC_COMMON_AREA : 0;
+        break;
+    case P9_PBA_BARMASK2: /* P9 occ common area size */
+        val = is_chip0 ? PNV_OCC_CA_SIZE_MASK : 0;
+        break;
+    default:
+        return -1;
+    }
+    return val;
+}
+
+static void pnv_homer_power9_xscom_write(void *opaque, hwaddr addr,
+                                         uint64_t val, unsigned size)
+{
+    /* callback function defined to homer xscom write */
+    return;
+}
+
+static const MemoryRegionOps pnv_homer_power9_xscom_ops = {
+    .read = pnv_homer_power9_xscom_read,
+    .write = pnv_homer_power9_xscom_write,
+    .valid.min_access_size = 8,
+    .valid.max_access_size = 8,
+    .impl.min_access_size = 8,
+    .impl.max_access_size = 8,
+    .endianness = DEVICE_BIG_ENDIAN,
+};
+
 static void pnv_homer_power9_class_init(ObjectClass *klass, void *data)
 {
     PnvHomerClass *homer = PNV_HOMER_CLASS(klass);
 
+    homer->xscom_size = PNV9_XSCOM_PBA_SIZE;
+    homer->xscom_ops = &pnv_homer_power9_xscom_ops;
     homer->homer_ops = &pnv_power9_homer_ops;
     homer->core_max_base = PNV9_CORE_MAX_BASE;
 }
@@ -228,13 +350,18 @@ static void pnv_homer_realize(DeviceState *dev, Error **errp)
 {
     PnvHomer *homer = PNV_HOMER(dev);
     PnvHomerClass *hmrc = PNV_HOMER_GET_CLASS(homer);
+    char name[32];
 
     assert(homer->chip);
 
-    /* homer region */
-    memory_region_init_io(&homer->regs, OBJECT(dev),
-                          hmrc->homer_ops, homer, "homer-main-memory",
-                          PNV_HOMER_SIZE);
+    /* XScom region for PBA registers */
+    pnv_xscom_region_init(&homer->xscom_regs, OBJECT(dev), hmrc->xscom_ops,
+                          homer, "xscom-pba", hmrc->xscom_size);
+
+    /* Homer region */
+    snprintf(name, sizeof(name), "homer-main-memory-%d", homer->chip->chip_id);
+    memory_region_init_io(&homer->regs, OBJECT(dev), hmrc->homer_ops,
+                          homer, name, PNV_HOMER_SIZE);
 }
 
 static Property pnv_homer_properties[] = {

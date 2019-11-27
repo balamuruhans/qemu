@@ -1014,6 +1014,10 @@ static void pnv_chip_power8_realize(DeviceState *dev, Error **errp)
         error_propagate(errp, local_err);
         return;
     }
+    /* Homer Xscom region */
+    pnv_xscom_add_subregion(chip, PNV_XSCOM_PBA_BASE, &chip8->homer.xscom_regs);
+
+    /* Homer mmio region */
     memory_region_add_subregion(get_system_memory(), PNV_HOMER_BASE(chip),
                                 &chip8->homer.regs);
 }
@@ -1225,6 +1229,10 @@ static void pnv_chip_power9_realize(DeviceState *dev, Error **errp)
         error_propagate(errp, local_err);
         return;
     }
+    /* Homer Xscom region */
+    pnv_xscom_add_subregion(chip, PNV9_XSCOM_PBA_BASE, &chip9->homer.xscom_regs);
+
+    /* Homer mmio region */
     memory_region_add_subregion(get_system_memory(), PNV9_HOMER_BASE(chip),
                                 &chip9->homer.regs);
 }

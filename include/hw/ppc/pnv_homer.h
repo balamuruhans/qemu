@@ -34,6 +34,7 @@ typedef struct PnvHomer {
 
     struct PnvChip *chip;
     MemoryRegion regs;
+    MemoryRegion xscom_regs;
 } PnvHomer;
 
 #define PNV_HOMER_CLASS(klass)   \
@@ -44,7 +45,9 @@ typedef struct PnvHomer {
 typedef struct PnvHomerClass {
     DeviceClass parent_class;
 
+    int xscom_size;
     const MemoryRegionOps *homer_ops;
+    const MemoryRegionOps *xscom_ops;
 
     hwaddr core_max_base;
 } PnvHomerClass;
