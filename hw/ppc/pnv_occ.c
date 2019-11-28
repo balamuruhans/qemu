@@ -264,8 +264,8 @@ static void pnv_occ_realize(DeviceState *dev, Error **errp)
     pnv_xscom_region_init(&occ->xscom_regs, OBJECT(dev), poc->xscom_ops,
                           occ, "xscom-occ", poc->xscom_size);
 
-    /* XScom region for OCC SRAM registers */
-    pnv_xscom_region_init(&occ->sram_regs, OBJECT(dev), poc->sram_ops,
+    /* OCC common area mmio region for OCC SRAM registers */
+    memory_region_init_io(&occ->sram_regs, OBJECT(dev), poc->sram_ops,
                           occ, "occ-common-area", PNV_OCC_COMMON_AREA_SIZE);
 }
 
