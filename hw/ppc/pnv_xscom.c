@@ -91,7 +91,7 @@ static uint64_t xscom_read_default(PnvChip *chip, uint32_t pcba)
 
     case P9_PBA_BARMASK0: /* P9 homer region size */
     case P8_PBA_BARMASK0: /* P8 homer region size */
-        return PNV_HOMER_SIZE;
+        return (PNV_HOMER_SIZE - 1) & 0x300000;
 
     case P9_PBA_BAR2: /* P9 occ common area */
         return PNV9_OCC_COMMON_AREA(chip);
@@ -100,7 +100,7 @@ static uint64_t xscom_read_default(PnvChip *chip, uint32_t pcba)
 
     case P9_PBA_BARMASK2: /* P9 occ common area size */
     case P8_PBA_BARMASK2: /* P8 occ common area size */
-        return PNV_OCC_COMMON_AREA_SIZE;
+        return (PNV_OCC_COMMON_AREA_SIZE - 1) & 0x700000;
 
     case 0x1010c00:     /* PIBAM FIR */
     case 0x1010c03:     /* PIBAM FIR MASK */
