@@ -118,7 +118,6 @@ static void pnv_homer_power8_class_init(ObjectClass *klass, void *data)
 {
     PnvHomerClass *homer = PNV_HOMER_CLASS(klass);
 
-    homer->homer_size = PNV_HOMER_SIZE;
     homer->homer_ops = &pnv_power8_homer_ops;
     homer->core_max_base = PNV8_CORE_MAX_BASE;
 }
@@ -214,7 +213,6 @@ static void pnv_homer_power9_class_init(ObjectClass *klass, void *data)
 {
     PnvHomerClass *homer = PNV_HOMER_CLASS(klass);
 
-    homer->homer_size = PNV9_HOMER_SIZE;
     homer->homer_ops = &pnv_power9_homer_ops;
     homer->core_max_base = PNV9_CORE_MAX_BASE;
 }
@@ -236,7 +234,7 @@ static void pnv_homer_realize(DeviceState *dev, Error **errp)
     /* homer region */
     memory_region_init_io(&homer->regs, OBJECT(dev),
                           hmrc->homer_ops, homer, "homer-main-memory",
-                          hmrc->homer_size);
+                          PNV_HOMER_SIZE);
 }
 
 static Property pnv_homer_properties[] = {

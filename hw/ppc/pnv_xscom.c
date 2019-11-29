@@ -90,7 +90,6 @@ static uint64_t xscom_read_default(PnvChip *chip, uint32_t pcba)
         return PNV_HOMER_BASE(chip);
 
     case P9_PBA_BARMASK0: /* P9 homer region size */
-        return PNV9_HOMER_SIZE;
     case P8_PBA_BARMASK0: /* P8 homer region size */
         return PNV_HOMER_SIZE;
 

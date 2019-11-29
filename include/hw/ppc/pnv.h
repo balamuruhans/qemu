@@ -226,7 +226,6 @@ IPMIBmc *pnv_bmc_create(void);
 #define PNV_HOMER_BASE(chip)                                            \
     (0x7ffd800000ull + ((uint64_t)PNV_CHIP_INDEX(chip)) * PNV_HOMER_SIZE)
 
-
 /*
  * XSCOM 0x20109CA defines the ICP BAR:
  *
@@ -290,7 +289,6 @@ IPMIBmc *pnv_bmc_create(void);
     (0x203fff800000ull + ((uint64_t)PNV_CHIP_INDEX(chip) * \
                            PNV9_OCC_COMMON_AREA_SIZE))
 
-#define PNV9_HOMER_SIZE              0x0000000000400000ull
 #define PNV9_HOMER_BASE(chip)                                           \
-    (0x203ffd800000ull + ((uint64_t)PNV_CHIP_INDEX(chip)) * PNV9_HOMER_SIZE)
+    (0x203ffd800000ull + ((uint64_t)PNV_CHIP_INDEX(chip)) * PNV_HOMER_SIZE)
 #endif /* PPC_PNV_H */

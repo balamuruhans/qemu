@@ -44,7 +44,6 @@ typedef struct PnvHomer {
 typedef struct PnvHomerClass {
     DeviceClass parent_class;
 
-    int homer_size;
     const MemoryRegionOps *homer_ops;
 
     hwaddr core_max_base;
