@@ -167,7 +167,6 @@ static void pnv_occ_power8_class_init(ObjectClass *klass, void *data)
     PnvOCCClass *poc = PNV_OCC_CLASS(klass);
 
     poc->xscom_size = PNV_XSCOM_OCC_SIZE;
-    poc->sram_size = PNV_OCC_COMMON_AREA_SIZE;
     poc->xscom_ops = &pnv_occ_power8_xscom_ops;
     poc->sram_ops = &pnv_occ_sram_ops;
     poc->psi_irq = PSIHB_IRQ_OCC;
@@ -240,7 +239,6 @@ static void pnv_occ_power9_class_init(ObjectClass *klass, void *data)
     PnvOCCClass *poc = PNV_OCC_CLASS(klass);
 
     poc->xscom_size = PNV9_XSCOM_OCC_SIZE;
-    poc->sram_size = PNV9_OCC_COMMON_AREA_SIZE;
     poc->xscom_ops = &pnv_occ_power9_xscom_ops;
     poc->sram_ops = &pnv_occ_sram_ops;
     poc->psi_irq = PSIHB9_IRQ_OCC;
@@ -268,7 +266,7 @@ static void pnv_occ_realize(DeviceState *dev, Error **errp)
 
     /* XScom region for OCC SRAM registers */
     pnv_xscom_region_init(&occ->sram_regs, OBJECT(dev), poc->sram_ops,
-                          occ, "occ-common-area", poc->sram_size);
+                          occ, "occ-common-area", PNV_OCC_COMMON_AREA_SIZE);
 }
 
 static Property pnv_occ_properties[] = {

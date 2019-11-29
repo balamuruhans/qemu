@@ -99,7 +99,6 @@ static uint64_t xscom_read_default(PnvChip *chip, uint32_t pcba)
         return PNV_OCC_COMMON_AREA(chip);
 
     case P9_PBA_BARMASK2: /* P9 occ common area size */
-        return PNV9_OCC_COMMON_AREA_SIZE;
     case P8_PBA_BARMASK2: /* P8 occ common area size */
         return PNV_OCC_COMMON_AREA_SIZE;
 

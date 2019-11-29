@@ -50,7 +50,6 @@ typedef struct PnvOCCClass {
     DeviceClass parent_class;
 
     int xscom_size;
-    int sram_size;
     const MemoryRegionOps *xscom_ops;
     const MemoryRegionOps *sram_ops;
     int psi_irq;
