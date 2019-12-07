@@ -1001,8 +1001,7 @@ static void pnv_chip_power8_realize(DeviceState *dev, Error **errp)
 
     /* OCC SRAM model */
     if (chip->chip_id == 0) {
-        memory_region_add_subregion(get_system_memory(),
-                                    PNV_OCC_COMMON_AREA(chip),
+        memory_region_add_subregion(get_system_memory(), PNV_OCC_COMMON_AREA,
                                     &chip8->occ.sram_regs);
     }
 
@@ -1213,8 +1212,7 @@ static void pnv_chip_power9_realize(DeviceState *dev, Error **errp)
 
     /* OCC SRAM model */
     if (chip->chip_id == 0) {
-        memory_region_add_subregion(get_system_memory(),
-                                    PNV9_OCC_COMMON_AREA(chip),
+        memory_region_add_subregion(get_system_memory(), PNV9_OCC_COMMON_AREA,
                                     &chip9->occ.sram_regs);
     }
 

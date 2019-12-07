@@ -99,12 +99,12 @@ static uint64_t xscom_read_default(PnvChip *chip, uint32_t pcba)
 
     case P9_PBA_BAR2: /* P9 occ common area */
         if (is_chip0) {
-            return PNV9_OCC_COMMON_AREA(chip);
+            return PNV9_OCC_COMMON_AREA;
         }
         return 0;
     case P8_PBA_BAR3: /* P8 occ common area */
         if (is_chip0) {
-            return PNV_OCC_COMMON_AREA(chip);
+            return PNV_OCC_COMMON_AREA;
         }
         return 0;
 
